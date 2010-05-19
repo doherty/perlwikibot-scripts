@@ -1,0 +1,68 @@
+README
+======
+
+Prerequisites
+-------------
+
+See deps.txt
+
+Configuration
+-------------
+
+Config files are of the standard format parsed by
+[`Config::General`](http://search.cpan.org/perldoc/Config::General).
+
+In config/main.conf, specify a default bot username. Then, create a
+named bot block. Here, you should specify the password, and the default
+wiki the bot operates on:
+
+    default = Mike's bot account
+    <bot Mike's bot account>
+        password    = the account's password
+        wiki        = enwikibooks
+    </bot>
+
+Running scripts
+---------------
+
+Use the --dry-run option to check that all the settings or arguments the
+script needs have been provided. This might include queries over
+network, but the wiki's won't be edited. You might additionally use
+--debug to get extra detail about what's going on so you can try to fix
+it.
+
+Once you're satisfied the script will run properly, run it for real:
+
+    perl the_script.pl --any --arguments="that are needed"
+
+
+Bugs/feature requests
+---------------------
+
+We endeavour to make these library of scripts as complete as those
+provided by [pywikibot](http://meta.wikimedia.org/wiki/Pywikibot), but
+that is a far-off goal at present. If you need a perlwikibot of a
+pywikibot script that isn't done yet, let us know and maybe it can be
+moved to the top of the pile.
+
+Bug reports and feature requests can go in
+[bugzilla](http://bugzilla.hashbang.ca/enter_bug.cgi?product=Perlwikibot-scripts).
+Bugs in [`MediaWiki::Bot`](http://search.cpan.org/perldoc?MediaWiki::Bot)
+go to <http://perlwikipedia.googlecode.com/>.
+
+Contributing
+------------
+
+This is a young project and we have lots of work ahead of us - your help
+in making this project as complete as pywikibot is welcome. Get the
+source from [git](http://git-scm.com/):
+
+    u@h:~$ git clone git://git.hashbang.ca/perwikibot-scripts
+
+You can work on what you want, or start porting scripts from
+pywikibot. You can find bug reports & feature requests for other scripts
+to work on in
+[bugzilla](http://bugzilla.hashbang.ca/buglist.cgi?cmdtype=runnamed&namedcmd=Perlwikibot-scripts).
+
+To have your work merged, send patches or pull requests to
+Mike.lifeguard <mike.lifeguard@gmail.com>.

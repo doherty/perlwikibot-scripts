@@ -1,0 +1,10 @@
+default = Mike's bot account
+
+<bot Mike's bot account>
+    password    = fake password
+    wiki        = enwikibooks
+</bot>
+<bot "Mike's testing account">
+    password    = fake password
+    wiki        = enwikibooks
+</bot>
