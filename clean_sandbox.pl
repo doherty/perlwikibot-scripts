@@ -209,7 +209,8 @@ if (!$username or !$password or !$wiki) {
     $wiki = $main{'bot'}{$username}{'wiki'} unless $wiki; warn "Setting \$wiki to $wiki" if $debug;
 }
 
-my $bot = MediaWiki::Bot->new();
+my $bot = MediaWiki::Bot->new(); # Create a default object so we can query sitematrix if need be
+$bot->{'debug'} = $debug;
 
 my $domain;
 if (!$text or !$page or !$summary) {
@@ -231,23 +232,10 @@ if (!$text or !$page or !$summary) {
 }
 
 $domain = $bot->db_to_domain($wiki) if ($wiki !~ m/\w\.\w/);
-warn "set_wiki($domain); # wiki: $wiki" if $debug;
-$bot->set_wiki($domain);
-
-
-my $logged_in = 0; # Keep track of whether we've logged in yet
-if ($use_cookies) {
-    $logged_in = $bot->login($username) unless $logged_in;
-    warn "Logged into $username with cookies" if $debug and $logged_in;
-    warn "Failed to log into $username with cookies" if $debug and !$logged_in;
-}
-if (!$logged_in and $password) {
-    $logged_in = $bot->login($username, $password) unless $logged_in;
-    warn "Logged into $username with password" if $debug and $logged_in;
-    warn "Failed to log into $username with password" if $debug and !$logged_in;
-}
-die "Didn't log in successfully" unless $logged_in;
-
+$bot = MediaWiki::Bot->new({
+    host        => $domain,
+    login_data  => { username => $username, password => $password },
+});
 die <<"END" if $dry_run;
 This is where we would attempt the following edit:
 \$bot->edit(
@@ -256,6 +244,7 @@ This is where we would attempt the following edit:
     '$summary',
     1
 );
+on $domain
 END
 warn "Editing..." if $debug;
 $bot->edit($page, $text, $summary, 1) or die "Couldn't edit";
