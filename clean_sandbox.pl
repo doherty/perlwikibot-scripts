@@ -237,10 +237,14 @@ $bot->set_wiki($domain);
 
 my $logged_in = 0; # Keep track of whether we've logged in yet
 if ($use_cookies) {
-    $logged_in = $bot->login($username) unless $logged_in;warn "Logged into $username with cookies" if $debug and $logged_in; warn "Failed to log into $username with cookies" if $debug and !$logged_in;
+    $logged_in = $bot->login($username) unless $logged_in;
+    warn "Logged into $username with cookies" if $debug and $logged_in;
+    warn "Failed to log into $username with cookies" if $debug and !$logged_in;
 }
 if (!$logged_in and $password) {
-    $logged_in = $bot->login($username, $password) unless $logged_in; warn "Logged into $username with password" if $debug and $logged_in; warn "Failed to log into $username with password" if $debug and !$logged_in;
+    $logged_in = $bot->login($username, $password) unless $logged_in;
+    warn "Logged into $username with password" if $debug and $logged_in;
+    warn "Failed to log into $username with password" if $debug and !$logged_in;
 }
 die "Didn't log in successfully" unless $logged_in;
 
