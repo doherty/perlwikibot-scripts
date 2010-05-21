@@ -236,18 +236,25 @@ $bot = MediaWiki::Bot->new({
     host        => $domain,
     login_data  => { username => $username, password => $password },
 });
+
 die <<"END" if $dry_run;
 This is where we would attempt the following edit:
-\$bot->edit(
-    '$page',
-    '$text',
-    '$summary',
-    1
-);
+\$bot->edit({
+    page        => $page,
+    text        => $text,
+    summary     => $summary
+    is_minor    => 1,
+});
 on $domain
 END
+
 warn "Editing..." if $debug;
-$bot->edit($page, $text, $summary, 1) or die "Couldn't edit";
+$bot->edit({
+    page        => $page,
+    text        => $text,
+    summary     => $summary
+    is_minor    => 1,
+}) or die "Couldn't edit";
 
 =head1 AUTHOR
 
