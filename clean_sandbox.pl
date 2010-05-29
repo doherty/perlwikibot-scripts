@@ -252,7 +252,7 @@ warn "Editing..." if $debug;
 $bot->edit({
     page        => $page,
     text        => $text,
-    summary     => $summary
+    summary     => $summary,
     is_minor    => 1,
 }) or die "Couldn't edit";
 
