@@ -4,7 +4,14 @@ README
 Prerequisites
 -------------
 
-See deps.txt
+ * MediaWiki::Bot - 3.0+ is required!
+ * The whole tree of dependencies brought in by MediaWiki::Bot 3.0+
+ * GetOpt::Long
+ * Pod::Usage
+ * Config::General
+ * File::Basename
+ * Term::ReadKey
+ * Term::Prompt
 
 Configuration
 -------------
@@ -16,7 +23,9 @@ In config/main.conf, specify a default bot username. Then, create a
 named bot block. Here, you should specify the password, and the default
 wiki the bot operates on:
 
-    default = Mike's bot account
+    <default>
+        bot = Mike's bot account
+    </default>
     <bot Mike's bot account>
         password    = the account's password
         wiki        = enwikibooks
