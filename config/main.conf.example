@@ -1,4 +1,7 @@
-default = Mike's bot account
+<default>
+    bot     = Mike's bot account
+    sysop   = Mike.lifeguard
+</defult>
 
 <bot Mike's bot account>
     password    = fake password
@@ -8,3 +11,7 @@ default = Mike's bot account
     password    = fake password
     wiki        = enwikibooks
 </bot>
+<sysop Mike.lifeguard>
+    password    = pass
+    wiki        = enwikibooks
+</sysop>

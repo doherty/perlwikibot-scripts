@@ -10,7 +10,7 @@ use Config::General qw(ParseConfig);
 
 use MediaWiki::Bot 3.0.0;
 
-my $VERSION = '0.0.1';
+my $VERSION = '0.0.2';
 
 =head1 NAME
 
@@ -127,11 +127,14 @@ directly, but you B<shouldn't!>
 
 if (defined($password)) {
     require Term::ReadKey;
+    require File::Basename;
+    my $script = File::Basename::basename($0);
 
-    print "[clean_sandbox.pl] password: ";
+    print "[$script] password: ";
     Term::ReadKey::ReadMode('noecho');      # Don't show the password
     $password = Term::ReadKey::ReadLine(0);
     Term::ReadKey::ReadMode('restore');     # Don't bork their terminal
+    print "\n";
 }
 
 =back
@@ -179,12 +182,6 @@ To use a different account:
 
     perl clean_sandbox.pl --username="My other account" --password
 
-=head1 FILES
-
-The script reads F<config/clean_sandbox.conf> to get default values for page,
-text, and summary. It reads F<config/main.conf> to get default values for
-username, password, and wiki.
-
 =cut
 
 # Currently it is an error to use --username without --password. But shouldn't
@@ -201,7 +198,7 @@ if (!$username or !$password or !$wiki) {
         -AutoTrue       => 1,
         -UTF8           => 1,
     );
-    $username = $main{'default'} unless $username; warn "Using $username" if $debug;
+    $username = $main{'default'}{'bot'} unless $username; warn "Using $username" if $debug;
     die "I can't figure out what account to use! Try setting default in config/main.conf, or use --username" unless $username;
     die "There's no block for $username and you didn't specify enough data on the command line to continue" unless $main{'bot'}{$username};
 
@@ -256,13 +253,19 @@ $bot->edit({
     is_minor    => 1,
 }) or die "Couldn't edit";
 
+=head1 FILES
+
+The script reads F<config/clean_sandbox.conf> to get default values for page,
+text, and summary. It reads F<config/main.conf> to get default values for
+username, password, and wiki.
+
 =head1 AUTHOR
 
 Written by Mike.lifeguard <mike.lifeguard@gmail.com>.
 
 =head1 COPYRIGHT
 
-Copyright © 2010 Mike.lifeguard <mike.lifeguard@gmail.com>.
+Copyright 2010 Mike.lifeguard <mike.lifeguard@gmail.com>.
 
 =head1 LICENSE
 
