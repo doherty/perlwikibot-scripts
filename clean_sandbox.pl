@@ -32,6 +32,29 @@ Options:
     --username  Sets a non-default username
     --password  Request a password prompt
 
+=head1 DESCRIPTION
+
+B<clean_sandbox.pl> will clean the sandbox of the given wiki.
+
+You can override the default page to clean, text to use, and edit summary with
+--page, --text, and --summary respectively. You can override the default bot
+account to use with --username, and password with --password.
+
+For security reasons, I<avoid> putting your password on the command line.
+This will reveal your password to anyone on your system capable of viewing
+process data. While this is safe for single-user systems, it is not on
+multi-user systems. Instead, omit the password itself, and the script will
+interactively prompt you for it:
+
+    u@h:~$ perl clean_sandbox.pl --password
+    [clean_sandbox.pl] password:
+
+Non-interactive use (from cronjobs, for example) should set the password in
+F<config/main.conf>.
+
+Note that a password will only be used from F<config/main.conf> if it is in a
+block for the username being used.
+
 =head1 OPTIONS
 
 =cut
@@ -139,29 +162,6 @@ if (defined($password)) {
 
 =back
 
-=head1 DESCRIPTION
-
-B<clean_sandbox.pl> will clean the sandbox of the given wiki.
-
-You can override the default page to clean, text to use, and edit summary with
---page, --text, and --summary respectively. You can override the default bot
-account to use with --username, and password with --password.
-
-For security reasons, I<avoid> putting your password on the command line.
-This will reveal your password to anyone on your system capable of viewing
-process data. While this is safe for single-user systems, it is not on
-multi-user systems. Instead, omit the password itself, and the script will
-interactively prompt you for it:
-
-    u@h:~$ perl clean_sandbox.pl --password
-    [clean_sandbox.pl] password:
-
-Non-interactive use (from cronjobs, for example) should set the password in
-F<config/main.conf>.
-
-Note that a password will only be used from F<config/main.conf> if it is in a
-block for the username being used.
-
 =head1 CAVEATS
 
 Unlike pywikipedia's clean_sandbox.py, this script does not have an option to
@@ -190,7 +190,7 @@ To use a different account:
 my $use_cookies = 1;
 $use_cookies = 0 if ($username or $password);
 
-if (!$username or !$password or !$wiki) {
+unless ($username and $password and $wiki) {
     warn 'Reading config/main.conf' if $debug;
     my %main = ParseConfig (
         -ConfigFile     => 'config/main.conf',
@@ -198,19 +198,24 @@ if (!$username or !$password or !$wiki) {
         -AutoTrue       => 1,
         -UTF8           => 1,
     );
-    $username = $main{'default'}{'bot'} unless $username; warn "Using $username" if $debug;
+    $username = $main{'default'}{'bot'} unless $username;
+    warn "Using $username" if $debug;
+
     die "I can't figure out what account to use! Try setting default in config/main.conf, or use --username" unless $username;
     die "There's no block for $username and you didn't specify enough data on the command line to continue" unless $main{'bot'}{$username};
 
-    $password = $main{'bot'}{$username}{'password'} if (!$password); warn "Setting \$password" if $debug;
-    $wiki = $main{'bot'}{$username}{'wiki'} unless $wiki; warn "Setting \$wiki to $wiki" if $debug;
+    $password = $main{'bot'}{$username}{'password'} unless $password;
+    warn "Setting \$password" if $debug;
+
+    $wiki = $main{'bot'}{$username}{'wiki'} unless $wiki;
+    warn "Setting \$wiki to $wiki" if $debug;
 }
 
 my $bot = MediaWiki::Bot->new(); # Create a default object so we can query sitematrix if need be
 $bot->{'debug'} = $debug;
 
 my $domain;
-if (!$text or !$page or !$summary) {
+unless ($text and $page and $summary) {
     warn 'Reading config/clean_sandbox.conf' if $debug;
     my %conf = ParseConfig (
         -ConfigFile     => 'config/clean_sandbox.conf',
@@ -233,6 +238,7 @@ $bot = MediaWiki::Bot->new({
     host        => $domain,
     login_data  => { username => $username, password => $password },
 });
+$bot->{'debug'} = $debug;
 
 die <<"END" if $dry_run;
 This is where we would attempt the following edit:
@@ -242,7 +248,7 @@ This is where we would attempt the following edit:
     summary     => $summary
     is_minor    => 1,
 });
-on $domain
+on $bot->{'api'}->{'config'}->{'api_url'}
 END
 
 warn "Editing..." if $debug;
